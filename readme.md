@@ -1,36 +1,29 @@
-# iPublications Connector Class (Profit Class) V3
+# iPublications Connector Class for AFAS Profit Webservices
 
-	iPublications BV, 2013
-	Wietse Wind <w.wind@ipublications.net>
-	Ready for iPublications Autoloader :)
+By [iPublications Software](https://ipublications.net), 2013
 
-## Classes (objects):
-	- Connection	  [ Connection object ]
-	- Connector		  [ Abstract Class    ], Exception: 1-6
-	- ConnectorFilter [ Filter object     ], Exception: 1000-1002
+## Purpose
+Use this PHP 5 (PHP 7 tested, working fine) class to communicate with the AFAS Profit webservices. NTLM (AFAS Online) and AppConnectors (using token) are supported. Error? There's an Exception for that :)
 
-## Endpoint Usable classes (connectors) so far:
-	- GetConnector
-	    -> Containing LIMIT and SORT since 2013/04/27
-	    -> Sort for Profit 2016 (AFAS SIDE) is default,
-	       Use '$g->SetDeprecatedSortingMethod();' before
-	       sorting to use old 2014 method.
-	- SubjectConnector
-	- ReportConnector
-	- DataConnector
-	- UpdateConnector
-	- OSCConnector (OfficeConnector) containing multiple methods
+Do you want to save lots and lots of time? Try **[nodum.io](https://nodum.io)** or have **[The Integrators](https://www.theintegrators.nl/)** build it for you.
 
-## Folders:
-	./iPublications/Profit		-> The classes
-	./sample					-> The samples (using the classes)
+### Folders:
+- `./iPublications/Profit` - The classes (in the namespace iPublications\Profit)
+- `./sample` - The samples (using the classes, with some inline docs and samples)
 
-## Requirements (Server-side)
+### Requirements (Server-side)
 
-	- PHP
-	- CURL lib in PHP
-	- OpenSSL for CURL (when using HTTPS calls)
+- PHP 5.4+
+- CURL (in PHP)
+- OpenSSL for CURL (when using HTTPS calls)
 
-## Requirements (User-side)
-	- Common sense
-	- Coffee
+### Requirements (User-side)
+- Some knowledge of AFAS Profit (GetConnector / UpdateConnector)
+- Common sense
+- Coffee (?)
+
+---
+
+Developing integrations with AFAS Profit (web/app/background) or building integrations with AFAS InSite / AFAS OutSite? Save a lot of time using **[nodum.io](https://nodum.io)**
+
+![nodum.io logo](https://nodum.io/images/logo-nodum.svg)
