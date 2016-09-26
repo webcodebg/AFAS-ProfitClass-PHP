@@ -394,7 +394,7 @@ abstract class Connector {
 				// Do nothing.
 			}
 		}
-		return null;
+		return (bool) empty($this->M_o_ANTA_Error);
 	}
 
 	final public function GetSoapRequestBody(){
