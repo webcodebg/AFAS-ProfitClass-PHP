@@ -186,7 +186,9 @@ abstract class Connector {
 	    $this->SetCurlDetails();
 	    $this->CheckCURLResult();
 
-	     @curl_close($this->CURL());
+	    @curl_close($this->CURL());
+
+	    return @$this->GetResponseData();
 	}
 
 	/* GETTERS */
@@ -225,7 +227,7 @@ abstract class Connector {
 	/* ALIAS METHODS */
 
 	public function call(){
-		return $this->execute();
+		return $this->Execute();
 	}
 
 	/* SETTERS */
@@ -364,7 +366,35 @@ abstract class Connector {
 	}
 
 	final public function GetEncodedXML(){
-		return (string) $this->M_s_OUTPUTXML;
+		return (string) (isset($this->M_s_OUTPUTXML) ? $this->M_s_OUTPUTXML : '');
+	}
+
+	final public function GetResponseData(){
+		$L_s_EncodedXml = @html_entity_decode(@$this->GetEncodedXML());
+		if(substr_count($L_s_EncodedXml, '<results><') > 0){
+			try {
+				$L_o_outputObj = new \SimpleXMLElement($L_s_EncodedXml);
+				if(!empty($L_o_outputObj) && is_object($L_o_outputObj)){
+					$L_a_outputObj   = (array) $L_o_outputObj;
+					$L_s_connectorId = @$this->GetConnectorType();
+					if(!empty($L_s_connectorId)){
+						$L_s_connectorId = strtolower($L_s_connectorId);
+						$L_a_keys        = array_keys($L_a_outputObj);
+						if(isset($L_a_keys[0]) && strtolower($L_a_keys[0]) == strtolower($L_s_connectorId) && !empty($L_a_outputObj[$L_a_keys[0]])){
+							$L_a_outputObj = $L_a_outputObj[$L_a_keys[0]];
+							if(is_object($L_a_outputObj)){
+								$L_a_outputObj = (array) $L_a_outputObj;
+							}
+						}
+					}
+					return $L_a_outputObj;
+				}
+			}
+			catch (\Exception $e){
+				// Do nothing.
+			}
+		}
+		return null;
 	}
 
 	final public function GetSoapRequestBody(){
@@ -587,7 +617,7 @@ abstract class Connector {
 	}
 
 	final public function GetConnectorId(){
-		return (string) $this->M_s_Element_connectorId;
+		return (string) (isset($this->M_s_Element_connectorId) ? $this->M_s_Element_connectorId : '');
 	}
 
 	final public function GetFiltersXml($P_b_decode=false){
@@ -623,7 +653,7 @@ abstract class Connector {
 	}
 
 	final private function GetConnectorType(){
-		return (string) $this->M_s_Element_connectorType;
+		return (string) (isset($this->M_s_Element_connectorType) ? $this->M_s_Element_connectorType : '');
 	}
 
 	final private function GetConnectorVersion(){
@@ -741,11 +771,11 @@ abstract class Connector {
 
 		// If we're here stuff should be fine, HTTP code must be 200...
 		$L_b_ConnectorMatch = false;
-		if(preg_match("@<".$this->GetResponseObject().">(.*)<\/".$this->GetResponseObject().">@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
-			if(isset($L_s_ResponseMatch[1])){
+		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)>(.*?)<\/(".$this->GetResponseObject()."|ExecuteResult)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
+			if(isset($L_s_ResponseMatch[2])){
 				// Returnvars
 				$L_b_ConnectorMatch = true;
-				$this->SetOutputXML($L_s_ResponseMatch[1]);
+				$this->SetOutputXML($L_s_ResponseMatch[2]);
 			}
 		}
 		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)([^>]+\/)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
