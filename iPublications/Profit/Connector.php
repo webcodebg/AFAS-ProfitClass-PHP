@@ -205,7 +205,7 @@ abstract class Connector {
 		if(isset($this->M_s_Element_password))  unset($this->M_s_Element_password);
 	}
 
-	private function GetCURLResponse(){
+	public function GetCURLResponse(){
 		return (string) (isset($this->M_s_CURL_Response) ? $this->M_s_CURL_Response : '');
 	}
 
@@ -748,7 +748,7 @@ abstract class Connector {
 				$this->SetOutputXML($L_s_ResponseMatch[1]);
 			}
 		}
-		if(preg_match("@<".$this->GetResponseObject()."([^>]+\/)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
+		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)([^>]+\/)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
 			if(isset($L_s_ResponseMatch[1])){
 				// Blank results
 				$L_b_ConnectorMatch = true;
