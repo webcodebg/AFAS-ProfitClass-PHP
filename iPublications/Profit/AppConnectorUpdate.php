@@ -42,7 +42,7 @@ class AppConnectorUpdate extends Connector {
 
 	final public function Execute($P_s_ConnectorName=false){
 		if(!preg_match("@[A-Z0-9a-z]{32,}@", $this->GetToken())) throw new Exception("No Token given or invalid.", 1004);
-		parent::Execute();
+		return parent::Execute();
 	}
 
 	final public function SetConnector($P_s_connectorName){
