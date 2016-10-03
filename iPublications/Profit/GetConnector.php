@@ -134,7 +134,7 @@ class GetConnector extends Connector {
 
 	final private function SetResults($P_a_results){
 		$this->M_a_results = (array) $P_a_results;
-		if(!empty($P_a_results)){
+		if(!empty($P_a_results) && $this->GetDeprecatedSortingMethod()){
 			if(!empty($this->M_s_sortType)) $this->applySorting();
 			if(!empty($this->M_i_limit))	$this->applyLimit();
 		}
