@@ -771,7 +771,7 @@ abstract class Connector {
 
 		// If we're here stuff should be fine, HTTP code must be 200...
 		$L_b_ConnectorMatch = false;
-		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)>(.*?)<\/(".$this->GetResponseObject()."|ExecuteResult)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
+		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)>(.*)<\/(".$this->GetResponseObject()."|ExecuteResult)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
 			if(isset($L_s_ResponseMatch[2])){
 				// Returnvars
 				$L_b_ConnectorMatch = true;
