@@ -46,6 +46,7 @@ abstract class Connector {
 	private $M_s_Element_dataID;
 	private $M_s_Element_parametersXml;
 	private $M_s_Element_subjectID;
+	private $M_s_Element_fileID;
 	private $M_s_Element_reportID;
 	private $M_s_Element_token;
 	private $M_s_Element_messageType;
@@ -83,6 +84,7 @@ abstract class Connector {
 	const DATAID              = 'dataID';
 	const PARAMETERSXML       = 'parametersXml';
 	const SUBJECTID           = 'subjectID';
+	const FILEID              = 'fileId';
 	const REPORTID            = 'reportID';
 	const TOKEN               = 'token';
 	const USERTOKEN           = 'userToken';
@@ -275,6 +277,7 @@ abstract class Connector {
 		$this->SetDataID('');
 		$this->SetParametersXml('');
 		$this->SetSubjectID('');
+		$this->SetFileID('');
 		$this->SetReportID('');
 		$this->SetUserToken('');
 		$this->SetToken('');
@@ -517,6 +520,11 @@ abstract class Connector {
 		return $this;
 	}
 
+	final public function SetFileID($P_s_Value){
+		$this->M_s_Element_fileID = (string) $P_s_Value;
+		return $this;
+	}
+
 	final public function SetReportID($P_s_Value){
 		$this->M_s_Element_reportID = (string) $P_s_Value;
 		return $this;
@@ -674,6 +682,10 @@ abstract class Connector {
 
 	final private function GetSubjectID(){
 		return (string) $this->M_s_Element_subjectID;
+	}
+
+	final private function GetFileID(){
+		return (string) $this->M_s_Element_fileID;
 	}
 
 	final private function GetReportID(){

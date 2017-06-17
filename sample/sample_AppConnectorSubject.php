@@ -12,9 +12,9 @@ include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
 ////////////////////////
 
 $c = new Connection;
-$c->SetTargetURL('https://profitweb.afasonline.nl/ProfitServices/GetConnector.asmx');
+$c->SetTargetURL('https://12345.afasonlineconnector.nl/ProfitServices/');
 $c->SetTimeout(20);
-$c->SetSoapCallToken('<token><version>1</version><data>754C0DE956364B6FB49FE0BBA53D21846486E6814D77B83D8969D7B25E603674</data></token>');
+$c->SetSoapCallToken('<token><version>1</version><data>39F88060405C7BAA9CA6D90992BD0666D76CD7A0446C916A2EBEF68D99DC05B5</data></token>');
 /**
  * $c->SetTargetURL('https://xxxxxx:yyyyyyyy@profitweb.afasonline.com/ProfitServices/GetConnector.asmx');
  * > When no auth in URL (or when NTLM, domain cannot be passed in URL)
@@ -23,9 +23,9 @@ $c->SetSoapCallToken('<token><version>1</version><data>754C0DE956364B6FB49FE0BBA
  * 		$c->SetAuthDomain('AOL');
  **/
 
-$c->SetUsername('ddd');
-$c->SetPassword('dddd');
-$c->SetAuthDomain('AOL');
+// $c->SetUsername('ddd');
+// $c->SetPassword('dddd');
+// $c->SetAuthDomain('AOL');
 
 /**
  * Een nieuw AppConnectorSubject object vereist een connectie-object als parameter.
@@ -57,11 +57,11 @@ $g = new AppConnectorSubject(clone $c);
 try {
 	//print_r($g->Execute(5583)); // Id van dossieritem, hoeft niet, mag ook direct in de Results Getter
 
-	$data = $g->GetResults(9838);
+	$data = $g->GetResults(95178,'E86564E04A7711B3E899CE93133BF614');
 
 	echo "OK :) Bestand ontvangen, length: " . strlen($data);
-	file_put_contents("/Users/wrw/Desktop/output.pdf", $data);
-
+	echo $data;
+	file_put_contents("/Users/wrw/Desktop/output.jpg", $data);
   // En als we het wilen opslaan:
   // file_put_contents('/Users/Wietse/Desktop/test.png', $g->Getresults());
 
