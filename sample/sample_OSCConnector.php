@@ -6,10 +6,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\OSCConnector;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/OSCConnector.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('http://deserver:8080/ProfitServices');

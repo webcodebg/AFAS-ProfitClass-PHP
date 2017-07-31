@@ -7,11 +7,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\GetConnector;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/GetConnector.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/ConnectorFilter.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('https://deserver/ProfitServices/GetConnector.asmx');

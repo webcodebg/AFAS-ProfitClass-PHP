@@ -6,10 +6,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\AppConnectorSubject;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/AppConnectorSubject.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('https://12345.afasonlineconnector.nl/ProfitServices/');

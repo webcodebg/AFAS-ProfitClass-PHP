@@ -6,10 +6,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\CommSvcConnector;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/CommSvcConnector.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('https://xxxxxxxxxx/ProfitServices/');
