@@ -8,10 +8,6 @@ use \iPublications\Profit\ConnectorException\ResponseRequirementException;
 use \Exception;
 use \SimpleXMLElement;
 
-@require_once(dirname(__FILE__) . '/Connector.php');
-@require_once(dirname(__FILE__) . '/ConnectorFilter.php');
-@require_once(dirname(__FILE__) . '/ConnectorException/ResponseRequirementException.php');
-
 /**
  *
  * iPublications Connector / Soap class V3 for AFAS Profit. Abstract.

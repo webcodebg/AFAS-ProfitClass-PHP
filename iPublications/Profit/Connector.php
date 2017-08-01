@@ -69,7 +69,7 @@ abstract class Connector {
 	private $M_s_CURL_ErrorDesc;
 	private $M_o_ANTA_Error;
 
-	private $M_s_OUTPUTXML;
+	protected $M_s_OUTPUTXML;
 	private $M_b_connectorNameSet;
 
 	const ENVIRONMENTID       = 'environmentId';

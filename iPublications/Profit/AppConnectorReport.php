@@ -7,9 +7,6 @@ use \iPublications\Profit\Connection;
 use \Exception;
 use \SimpleXMLElement;
 
-@require_once(dirname(__FILE__) . '/Connector.php');
-@require_once(dirname(__FILE__) . '/ConnectorFilter.php');
-
 /**
  *
  * iPublications Connector / Soap class V3 for AFAS Profit. Abstract.

@@ -6,10 +6,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\SubjectConnector;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/SubjectConnector.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('https://deserver:8080/ProfitServices');

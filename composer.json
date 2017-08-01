@@ -1,0 +1,26 @@
+{
+    "name": "ipublications/afas-profit",
+    "type": "library",
+    "require": {
+        "php": "^5.6|^7.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Wietse Wind",
+            "email": "w.wind@ipublications.net",
+            "role": "Developer"
+        }
+    ],
+    "Support": {
+        "email": "info@ipublications.net",
+        "issues": "https://support.ipublications.net/",
+        "source": "https://github.com/iPublications/AFAS-ProfitClass-PHP"
+    },
+    "minimum-stability": "stable",
+    "autoload": {
+        "PSR-4": {
+            "iPublications\\": "iPublications/"
+        }
+    }
+}

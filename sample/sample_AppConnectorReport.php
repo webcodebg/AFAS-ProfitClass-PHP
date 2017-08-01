@@ -7,11 +7,7 @@ use \iPublications\Profit\Connection;
 use \iPublications\Profit\AppConnectorReport;
 use \Exception;
 
-////////////////////////
-include_once (dirname(__FILE__) . '/../iPublications/Profit/AppConnectorReport.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/ConnectorFilter.php');
-include_once (dirname(__FILE__) . '/../iPublications/Profit/Connection.php');
-////////////////////////
+include_once (dirname(__FILE__) . '/../vendor/autoload.php');
 
 $c = new Connection;
 $c->SetTargetURL('https://profitweb.afasonline.nl/ProfitServices/GetConnector.asmx');
