@@ -19,7 +19,7 @@
     },
     "minimum-stability": "stable",
     "autoload": {
-        "PSR-4": {
+        "psr-4": {
             "iPublications\\": "iPublications/"
         }
     }
