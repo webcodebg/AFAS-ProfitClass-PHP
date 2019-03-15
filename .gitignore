@@ -2,6 +2,7 @@
 /sample/sample_*.test.php
 
 /vendor/
+/tmp/
 composer.lock
 
 # ignore IDE
