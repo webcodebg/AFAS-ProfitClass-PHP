@@ -5,7 +5,7 @@ namespace iPublications\Profit;
 class GuzzleAdapterClient implements Client
 {
     /**
-     * @var \GuzzleHttp\Client
+     * @var \GuzzleHttp\ClientInterface
      */
     protected $client;
 
@@ -34,7 +34,7 @@ class GuzzleAdapterClient implements Client
      */
     protected $options;
 
-    public function __construct(\GuzzleHttp\Client $client = null)
+    public function __construct(\GuzzleHttp\ClientInterface $client = null)
     {
         $this->client = $client ? $client : new \GuzzleHttp\Client;
     }
