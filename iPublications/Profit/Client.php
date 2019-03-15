@@ -10,69 +10,69 @@ interface Client {
      *
      * @return bool
      */
-    public function CheckClient();
+    public function CheckClient() : bool;
 
     /**
      * Call before a new request
      */
-    public function Init();
+    public function Init() : void;
 
     /**
      * @return void
      * @throws ClientException on connection error, **NOT** on HTTP
      */
-    public function Execute();
+    public function Execute() : void;
 
     /**
      * @param string $url
      */
-    public function SetUrl($url);
+    public function SetUrl(string $url);
 
     /**
      * @param int $timeout ms
      */
-    public function SetConnectTimeout($timeout);
+    public function SetConnectTimeout(int $timeout);
 
     /**
      * @param int $timeout ms
      */
-    public function SetTimeout($timeout);
+    public function SetTimeout(int $timeout);
 
     /**
      * @param bool $ssl
      */
-    public function SetUseSSL($ssl);
+    public function SetUseSSL(bool $ssl);
 
     /**
      * @param bool $insecure
      */
-    public function SetSslAllowInsecure($insecure);
+    public function SetSslAllowInsecure(bool $insecure);
 
     /**
      * @param string $data
      */
-    public function SetPostData($data);
+    public function SetPostData(string $data);
 
     /**
      * @param array $headers ['Key: Value', 'Key: Value']
      */
-    public function SetHeaders($headers);
+    public function SetHeaders(array $headers);
 
     /**
      * @param string $user
      * @param string $pass
      */
-    public function SetHttpAuth($user, $pass);
+    public function SetHttpAuth(string $user, string $pass);
 
     /**
-     * @param $domain
+     * @param string $domain
      */
-    public function SetNtlmAuth($domain);
+    public function SetNtlmAuth(string $domain);
 
     /**
-     * @return string|null
+     * @return string (empty on error)
      */
-    public function GetResponseBody();
+    public function GetResponseBody() : string;
 
     /**
      * @return mixed

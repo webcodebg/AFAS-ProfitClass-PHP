@@ -3,9 +3,7 @@
 By [iPublications Software](https://ipublications.net), 2013
 
 ## Purpose
-Use this PHP 5 (PHP 7 tested, working fine) class to communicate with the AFAS Profit webservices. NTLM (AFAS Online) and AppConnectors (using token) are supported. Error? There's an Exception for that :)
-
-Do you want to save lots and lots of time? Try **[nodum.io](https://nodum.io)** or have **[The Integrators](https://www.theintegrators.nl/)** build it for you.
+Use this PHP class to communicate with the AFAS Profit webservices. NTLM (AFAS Online) and AppConnectors (using token) are supported. Error? There's an Exception for that :)
 
 ### Folders:
 - `./iPublications/Profit` - The classes (in the namespace iPublications\Profit)
@@ -13,7 +11,7 @@ Do you want to save lots and lots of time? Try **[nodum.io](https://nodum.io)** 
 
 ### Requirements (Server-side)
 
-- PHP 5.4+
+- PHP 7.2+
 - CURL (in PHP)
 - OpenSSL for CURL (when using HTTPS calls)
 
@@ -24,6 +22,5 @@ Do you want to save lots and lots of time? Try **[nodum.io](https://nodum.io)** 
 
 ---
 
-Developing integrations with AFAS Profit (web/app/background) or building integrations with AFAS InSite / AFAS OutSite? Save a lot of time using **[nodum.io](https://nodum.io)**
+Developing integrations with AFAS Profit (web/app/background) or building integrations with AFAS InSite / AFAS OutSite? 
 
-![nodum.io logo](https://nodum.io/images/logo-nodum.svg)

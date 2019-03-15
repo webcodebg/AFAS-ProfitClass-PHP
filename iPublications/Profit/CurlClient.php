@@ -24,7 +24,7 @@ class CurlClient implements Client {
      */
     protected $headers = [];
 
-    public function Init()
+    public function Init() : void
     {
         if($this->curl !== null){
             curl_close($this->curl);
@@ -40,7 +40,7 @@ class CurlClient implements Client {
         $this->headers = [];
     }
 
-    public function CheckClient()
+    public function CheckClient() : bool
     {
         if(ini_get('safe_mode') == 1) return false;
         return (bool) in_array('curl', get_loaded_extensions());
@@ -49,7 +49,7 @@ class CurlClient implements Client {
     /**
      * @throws ClientException
      */
-    public function Execute()
+    public function Execute() : void
     {
         $this->set(CURLOPT_HTTPHEADER, $this->headers);
 
@@ -111,9 +111,9 @@ class CurlClient implements Client {
         $this->set(CURLOPT_USERPWD, $domain);
     }
 
-    public function GetResponseBody()
+    public function GetResponseBody() : string
     {
-        return isset($this->response) ? (string) $this->response : '';
+        return $this->response ?? '';
     }
 
     public function GetResponseHttpCode()

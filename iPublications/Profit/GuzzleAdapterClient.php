@@ -39,7 +39,7 @@ class GuzzleAdapterClient implements Client
         $this->client = $client ? $client : new \GuzzleHttp\Client;
     }
 
-    public function Init()
+    public function Init() : void
     {
         $this->method = 'GET';
         $this->url = null;
@@ -50,12 +50,12 @@ class GuzzleAdapterClient implements Client
         ];
     }
 
-    public function CheckClient()
+    public function CheckClient() : bool
     {
         return true;
     }
 
-    public function Execute()
+    public function Execute() : void
     {
         try {
             $this->response = $this->client->request($this->method, $this->url, $this->options);
@@ -123,9 +123,9 @@ class GuzzleAdapterClient implements Client
         throw new ClientException("NTLM not supported");
     }
 
-    public function GetResponseBody()
+    public function GetResponseBody() : string
     {
-        return $this->responseBody;
+        return $this->responseBody ?? '';
     }
 
     public function GetResponseHttpCode()
