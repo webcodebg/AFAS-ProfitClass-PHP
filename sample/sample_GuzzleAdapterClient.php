@@ -10,6 +10,11 @@ $c->SetTimeout(10);
 
 $g = new AppConnectorGet(clone $c);
 
+// This sets a new client
+$g->SetClient(new GuzzleAdapterClient);
+
 $g->SetEnvironmentId('IPUB');
 $g->SetToken('xxxxxxx');
 $g->SetConnectorId('XXXXXXX');
+
+// ... continue using the connector as usual
