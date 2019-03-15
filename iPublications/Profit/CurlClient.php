@@ -128,6 +128,8 @@ class CurlClient implements Client {
 
     public function __destruct()
     {
-        @curl_close($this->curl);
+        if($this->curl !== null){
+            @curl_close($this->curl);
+        }
     }
 }
