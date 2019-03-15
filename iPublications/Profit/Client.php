@@ -13,6 +13,11 @@ interface Client {
     public function CheckClient();
 
     /**
+     * Call before a new request
+     */
+    public function Init();
+
+    /**
      * @return void
      * @throws ClientException on connection error, **NOT** on HTTP
      */
@@ -49,7 +54,7 @@ interface Client {
     public function SetPostData($data);
 
     /**
-     * @param array $headers
+     * @param array $headers ['Key: Value', 'Key: Value']
      */
     public function SetHeaders($headers);
 

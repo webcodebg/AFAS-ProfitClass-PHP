@@ -19,12 +19,24 @@ class CurlClient implements Client {
      */
     protected $details;
 
+    /**
+     * @var array
+     */
+    protected $headers = [];
+
     public function __construct()
     {
         $this->curl = curl_init();
 
         $this->set(CURLOPT_RETURNTRANSFER, true);
         $this->set(CURLOPT_FOLLOWLOCATION, true);
+    }
+
+    public function Init()
+    {
+        $this->response = null;
+        $this->details = null;
+        $this->headers = [];
     }
 
     public function CheckClient()
@@ -38,6 +50,8 @@ class CurlClient implements Client {
      */
     public function Execute()
     {
+        $this->set(CURLOPT_HTTPHEADER, $this->headers);
+
         $this->response = curl_exec($this->curl);
 
         if($this->response === false){
@@ -69,19 +83,19 @@ class CurlClient implements Client {
 
     public function SetSslAllowInsecure($insecure)
     {
-        $this->set(CURLOPT_SSL_VERIFYPEER, $insecure);
-        $this->set(CURLOPT_SSL_VERIFYHOST, $insecure);
+        $this->set(CURLOPT_SSL_VERIFYPEER, $insecure ? 0 : 1);
+        $this->set(CURLOPT_SSL_VERIFYHOST, $insecure ? 0 : 2);
     }
 
     public function SetPostData($data)
     {
         $this->set(CURLOPT_POST, true);
-        $this->set(CURLOPT_POSTFIELDS, true);
+        $this->set(CURLOPT_POSTFIELDS, $data);
     }
 
     public function SetHeaders($headers)
     {
-        $this->set(CURLOPT_HTTPHEADER, $headers);
+        $this->headers = array_merge($this->headers, $headers);
     }
 
     public function SetHttpAuth($user, $pass)

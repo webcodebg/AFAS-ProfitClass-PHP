@@ -126,6 +126,19 @@ abstract class Connector {
 		if($P_o_ConnectionSettings->HasSoapCallToken())       $this->SetToken($P_o_ConnectionSettings->GetSoapCallToken());
 	}
 
+    /**
+     * @param Client $client
+     * @return Client
+     */
+	public function SwapClient(Client $client)
+    {
+        $prevClient =  $this->M_o_Client;
+
+        $this->M_o_Client = $client;
+
+        return $prevClient;
+    }
+
 	final public function setConnectorNameIsSet($L_s_connectorName = ''){
 		if(!empty($L_s_connectorName)) $this->M_b_connectorNameSet = true;
 	}
@@ -156,6 +169,8 @@ abstract class Connector {
 
 		$this->checkConnectorNameSet();
 
+		$this->M_o_Client->Init();
+
 		$this->M_o_Client->SetUrl($this->GetPreparedEndpoint());
         $this->M_o_Client->SetConnectTimeout($this->Connection()->GetConnectTimeout()*1000);
         $this->M_o_Client->SetTimeout($this->Connection()->GetTimeout()*1000);
@@ -164,7 +179,7 @@ abstract class Connector {
         $this->M_o_Client->SetSslAllowInsecure(true);
 
         $this->M_o_Client->SetPostData($this->GetSoapRequestBody());
-        $this->M_o_Client->SetHeaders(array_merge($this->GetSoapRequestHeaders(),array('Content-length' => strlen($this->GetSoapRequestBody()))));
+        $this->M_o_Client->SetHeaders(array_merge($this->GetSoapRequestHeaders(),array('Content-length: '.strlen($this->GetSoapRequestBody()))));
 
 	    if($this->Connection()->GetAuthType() !== Connection::AUTH_NONE){
 	        if($this->Connection()->GetAuthType() === Connection::AUTH_BASIC){
@@ -237,7 +252,7 @@ abstract class Connector {
 		$this->M_i_Client_HardError = 1;
 	}
 
-	final private function SetClient(Client $P_o_Client){
+	final private function SetClient(Client $P_o_Client = null){
 	    $this->M_o_Client = $P_o_Client !== null ? $P_o_Client : new CurlClient;
     }
 
