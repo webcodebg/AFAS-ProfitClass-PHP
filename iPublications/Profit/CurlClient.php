@@ -24,16 +24,17 @@ class CurlClient implements Client {
      */
     protected $headers = [];
 
-    public function __construct()
+    public function Init()
     {
+        if($this->curl !== null){
+            curl_close($this->curl);
+        }
+
         $this->curl = curl_init();
 
         $this->set(CURLOPT_RETURNTRANSFER, true);
         $this->set(CURLOPT_FOLLOWLOCATION, true);
-    }
 
-    public function Init()
-    {
         $this->response = null;
         $this->details = null;
         $this->headers = [];

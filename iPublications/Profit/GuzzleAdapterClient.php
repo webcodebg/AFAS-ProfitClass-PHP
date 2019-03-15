@@ -1,6 +1,8 @@
 <?php
 
-class GuzzleAfasAdapter implements \iPublications\Profit\Client
+namespace iPublications\Profit;
+
+class GuzzleAdapterClient implements Client
 {
     /**
      * @var \GuzzleHttp\Client
@@ -32,9 +34,9 @@ class GuzzleAfasAdapter implements \iPublications\Profit\Client
      */
     protected $options;
 
-    public function __construct()
+    public function __construct(\GuzzleHttp\Client $client = null)
     {
-        $this->client = new \GuzzleHttp\Client;
+        $this->client = $client ? $client : new \GuzzleHttp\Client;
     }
 
     public function Init()
@@ -55,8 +57,12 @@ class GuzzleAfasAdapter implements \iPublications\Profit\Client
 
     public function Execute()
     {
-        $this->response = $this->client->request($this->method, $this->url, $this->options);
-        $this->responseBody = $this->response->getBody()->getContents();
+        try {
+            $this->response = $this->client->request($this->method, $this->url, $this->options);
+            $this->responseBody = $this->response->getBody()->getContents();
+        } catch (\GuzzleHttp\Exception\GuzzleException $e) {
+            throw new ClientException($e->getMessage(), $e->getCode(), $e);
+        }
     }
 
     public function SetUrl($url)
@@ -110,11 +116,11 @@ class GuzzleAfasAdapter implements \iPublications\Profit\Client
     }
 
     /**
-     * @throws \iPublications\Profit\ClientException
+     * @throws ClientException
      */
     public function SetNtlmAuth($domain)
     {
-        throw new \iPublications\Profit\ClientException("NTLM not supported");
+        throw new ClientException("NTLM not supported");
     }
 
     public function GetResponseBody()

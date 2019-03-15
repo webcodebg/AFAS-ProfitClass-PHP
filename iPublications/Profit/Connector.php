@@ -105,7 +105,7 @@ abstract class Connector {
 	public function __construct(Connection $P_o_ConnectionSettings, Client $P_o_Client = null){
 		// This function NEEDS to be extended, calling (this) parent
 
-        $this->SetClient($P_o_Client);
+        $this->SetClient($P_o_Client ?? new CurlClient());
 		$this->SetConnectObject($P_o_ConnectionSettings);
 
 		$this->SetMethodName('Execute');
@@ -127,16 +127,15 @@ abstract class Connector {
 	}
 
     /**
-     * @param Client $client
-     * @return Client
+     * @param Client $P_o_Client
      */
-	public function SwapClient(Client $client)
+	public function SetClient(Client $P_o_Client)
     {
-        $prevClient =  $this->M_o_Client;
+        if($this->M_o_Client !== null){
+            unset($this->M_o_Client);
+        }
 
-        $this->M_o_Client = $client;
-
-        return $prevClient;
+        $this->M_o_Client = $P_o_Client;
     }
 
 	final public function setConnectorNameIsSet($L_s_connectorName = ''){
@@ -251,10 +250,6 @@ abstract class Connector {
 		$this->M_s_Client_ErrorDesc = $P_s_HTTPResponse;
 		$this->M_i_Client_HardError = 1;
 	}
-
-	final private function SetClient(Client $P_o_Client = null){
-	    $this->M_o_Client = $P_o_Client !== null ? $P_o_Client : new CurlClient;
-    }
 
 	final private function SetConnectObject(Connection $P_o_Connect){
 		$this->M_o_Connect = $P_o_Connect;
