@@ -130,6 +130,6 @@ class GuzzleAdapterClient implements Client
 
     public function GetResponseHttpCode()
     {
-        return $this->response->getStatusCode();
+        return $this->response ? $this->response->getStatusCode() : null;
     }
 }
