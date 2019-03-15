@@ -2,6 +2,7 @@
 /sample/sample_*.test.php
 
 /vendor/
+composer.lock
 
 # ignore IDE
 .idea

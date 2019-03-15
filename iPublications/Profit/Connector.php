@@ -1,7 +1,6 @@
 <?php
 
 namespace iPublications\Profit;
-use \iPublications\Profit\Connection;
 use \Exception;
 use \stdClass;
 
@@ -17,7 +16,7 @@ use \stdClass;
  * @category Connectivity
  * @throws Exception
  * 		1 = Required Element undefined
- * 		2 = CURL Lib (required) not in runtime
+ * 		2 = Client error
  * 	    3 = Hard Socket/Call error
  * 		4 = Soft-HTTP error
  * 		5 = (Profit) ANTA-Error
@@ -25,6 +24,10 @@ use \stdClass;
  */
 
 abstract class Connector {
+    /**
+     * @var Client
+     */
+    private $M_o_Client;
 	private $M_o_Connect;
 	private $M_s_MethodName;
 	private $M_s_ResponseObject;
@@ -62,11 +65,10 @@ abstract class Connector {
 	private $M_i_Element_sortdirection = 1;
 	private $M_b_ProfitOldSorting      = false;
 
-	private $M_o_CURL_Channel;
-	private $M_o_CURL_Details;
-	private $M_s_CURL_Response;
-	private $M_i_CURL_HardError;
-	private $M_s_CURL_ErrorDesc;
+	private $M_s_Client_Response;
+	private $M_i_Client_HardError;
+    private $M_s_Client_ErrorDesc;
+    private $M_s_Client_HttpCode;
 	private $M_o_ANTA_Error;
 
 	protected $M_s_OUTPUTXML;
@@ -100,9 +102,10 @@ abstract class Connector {
 
 	const NON_ANTA_ERROR   = '{NON-ANTA}';
 
-	public function __construct(Connection $P_o_ConnectionSettings){
+	public function __construct(Connection $P_o_ConnectionSettings, Client $P_o_Client = null){
 		// This function NEEDS to be extended, calling (this) parent
 
+        $this->SetClient($P_o_Client);
 		$this->SetConnectObject($P_o_ConnectionSettings);
 
 		$this->SetMethodName('Execute');
@@ -136,8 +139,8 @@ abstract class Connector {
 	}
 
 	final public function __destruct(){
-		if(!$this->CheckCURL()){
-			throw new Exception ("CURL Lib not found in PHP Runtime", 2);
+		if(!$this->M_o_Client->CheckClient()){
+			throw new Exception ("Client not ready", 2);
 		}
 	}
 
@@ -153,47 +156,42 @@ abstract class Connector {
 
 		$this->checkConnectorNameSet();
 
-	    $this->CURL(curl_init());
+		$this->M_o_Client->SetUrl($this->GetPreparedEndpoint());
+        $this->M_o_Client->SetConnectTimeout($this->Connection()->GetConnectTimeout()*1000);
+        $this->M_o_Client->SetTimeout($this->Connection()->GetTimeout()*1000);
 
-	    curl_setopt($this->CURL(), CURLOPT_URL, 		  		$this->GetPreparedEndpoint());
-	    curl_setopt($this->CURL(), CURLOPT_CONNECTTIMEOUT_MS, 	$this->Connection()->GetConnectTimeout()*1000);
-	    curl_setopt($this->CURL(), CURLOPT_TIMEOUT_MS,        	$this->Connection()->GetTimeout()*1000);
-	    curl_setopt($this->CURL(), CURLOPT_RETURNTRANSFER, 		true);
-	    curl_setopt($this->CURL(), CURLOPT_FOLLOWLOCATION,      true);
+        $this->M_o_Client->SetUseSSL($this->Connection()->GetUseSSL());
+        $this->M_o_Client->SetSslAllowInsecure(true);
 
-	    if($this->Connection()->GetUseSSL()){
-	      curl_setopt($this->CURL(), CURLOPT_SSL_VERIFYPEER, false);
-	      curl_setopt($this->CURL(), CURLOPT_SSL_VERIFYHOST, false);
-	    }
-
-	    curl_setopt($this->CURL(), CURLOPT_POST,           	true);
-	    curl_setopt($this->CURL(), CURLOPT_POSTFIELDS,     	$this->GetSoapRequestBody());
-	    curl_setopt($this->CURL(), CURLOPT_HTTPHEADER,     	array_merge($this->GetSoapRequestHeaders(),array('Content-length' => strlen($this->GetSoapRequestBody()))));
+        $this->M_o_Client->SetPostData($this->GetSoapRequestBody());
+        $this->M_o_Client->SetHeaders(array_merge($this->GetSoapRequestHeaders(),array('Content-length' => strlen($this->GetSoapRequestBody()))));
 
 	    if($this->Connection()->GetAuthType() !== Connection::AUTH_NONE){
-	      curl_setopt($this->CURL(), CURLOPT_HTTPAUTH, 		($this->Connection()->GetAuthType() == Connection::AUTH_NTLM ? CURLAUTH_NTLM : CURLAUTH_BASIC));
-	      curl_setopt($this->CURL(), CURLOPT_USERPWD, 		($this->Connection()->GetAuthType() == Connection::AUTH_NTLM ? $this->Connection()->GetAuthDomain() . "\\" : '' ) . $this->Connection()->GetUsername() . ":" . $this->Connection()->GetPassword());
+	        if($this->Connection()->GetAuthType() === Connection::AUTH_BASIC){
+	            $this->M_o_Client->SetHttpAuth($this->Connection()->GetUsername(), $this->Connection()->GetPassword());
+            } elseif ($this->Connection()->GetAuthType() === Connection::AUTH_NTLM){
+                $this->M_o_Client->SetNtlmAuth($this->Connection()->GetAuthDomain() . "\\" );
+            }
 	    }
 
-	    $L_s_Return = curl_exec($this->CURL());
+	    try {
+            $this->M_o_Client->Execute();
+            $this->SetClientResponse($this->M_o_Client->GetResponseBody());
+            $this->SetClientHttpCode($this->M_o_Client->GetResponseHttpCode());
+        } catch (ClientException $e) {
+	        $this->SetClientError($e->getMessage());
+        }
 
-	    if($L_s_Return === false){
-	    	// Error!
-	    	$this->SetCurlError(curl_error($this->CURL()));
-	    }else{
-	    	// Went fine, except for possible HTTP errors!
-	    	$this->SetCurlResponse($L_s_Return);
-	    }
-
-	    $this->SetCurlDetails();
-	    $this->CheckCURLResult();
-
-	    @curl_close($this->CURL());
+	    $this->CheckClientResult();
 
 	    return @$this->GetResponseData();
 	}
 
 	/* GETTERS */
+
+    private function GetClientResponse(){
+        return $this->M_o_Client->GetResponseBody();
+    }
 
 	private function GetConnectorName(){
 		return substr(strrchr(get_called_class(), "\\"), 1);
@@ -207,14 +205,6 @@ abstract class Connector {
 		if(isset($this->M_s_Element_userId))    unset($this->M_s_Element_userId);
 		if(isset($this->M_s_Element_logonAs))   unset($this->M_s_Element_logonAs);
 		if(isset($this->M_s_Element_password))  unset($this->M_s_Element_password);
-	}
-
-	public function GetCURLResponse(){
-		return (string) (isset($this->M_s_CURL_Response) ? $this->M_s_CURL_Response : '');
-	}
-
-	private function GetCurlError(){
-		return (string) (isset($this->M_s_CURL_ErrorDesc) ? $this->M_s_CURL_ErrorDesc : '');
 	}
 
 	private function GetPreparedEndpoint($P_s_EndpointURL = null){
@@ -234,18 +224,22 @@ abstract class Connector {
 
 	/* SETTERS */
 
-	final private function SetCurlDetails(){
-		$this->M_o_CURL_Details = (object) curl_getinfo($this->CURL());
+	final private function SetClientResponse($P_s_HTTPResponse){
+		$this->M_s_Client_Response = $P_s_HTTPResponse;
 	}
 
-	final private function SetCurlResponse($P_s_HTTPResponse){
-		$this->M_s_CURL_Response = $P_s_HTTPResponse;
+	final private function SetClientHttpCode($P_s_HTTPCode){
+	    $this->M_s_Client_HttpCode = $P_s_HTTPCode;
+    }
+
+	final private function SetClientError($P_s_HTTPResponse){
+		$this->M_s_Client_ErrorDesc = $P_s_HTTPResponse;
+		$this->M_i_Client_HardError = 1;
 	}
 
-	final private function SetCurlError($P_s_HTTPResponse){
-		$this->M_s_CURL_ErrorDesc = $P_s_HTTPResponse;
-		$this->M_i_CURL_HardError = 1;
-	}
+	final private function SetClient(Client $P_o_Client){
+	    $this->M_o_Client = $P_o_Client !== null ? $P_o_Client : new CurlClient;
+    }
 
 	final private function SetConnectObject(Connection $P_o_Connect){
 		$this->M_o_Connect = $P_o_Connect;
@@ -312,7 +306,7 @@ abstract class Connector {
 		$this->M_o_ANTA_Error->body        = '[Class Connector] Unparsable ANTA error';
 		$this->M_o_ANTA_Error->reference   = '-';
 
-		$L_s_ExceptionBody = $this->GetCURLResponse();
+		$L_s_ExceptionBody = $this->GetClientResponse();
 
 		if(preg_match("@ProfitApplicationException|faultstring>([^<]+)<\/faultstring@i", $L_s_ExceptionBody)){
 			if(preg_match("@ErrorNumber>([^<]+)<\/ErrorNumber@i", $L_s_ExceptionBody, $L_a_Match)){
@@ -354,10 +348,6 @@ abstract class Connector {
 		}else{
 			return false;
 		}
-	}
-
-	private function GetCurlHardError(){
-		return (bool) isset($this->M_i_CURL_HardError);
 	}
 
 	public function GetRequiredElements(){
@@ -424,7 +414,7 @@ abstract class Connector {
 	      "Pragma: no-cache",
 	      "SOAPAction: \"urn:Afas.Profit.Services/".$this->GetMethodName()."\"",
 	    );
-	    // Todo: Replace ContentLength parameter before sending to CURL
+	    // Todo: Replace ContentLength parameter before sending to Client
 
 	    return (array) $this->M_a_SoapRequestHeaders;
 	}
@@ -433,22 +423,6 @@ abstract class Connector {
 
 	final private function Connection(){
 		return $this->M_o_Connect;
-	}
-
-	final private function CURL($M_o_CURL = null){
-		if($M_o_CURL === null){
-			return $this->M_o_CURL_Channel;
-		}else{
-			$this->M_o_CURL_Channel = $M_o_CURL;
-		}
-	}
-
-	final private function CURLDetails(){
-		return (object) $this->M_o_CURL_Details;
-	}
-
-	final public function GetCURLDetails(){
-		return $this->CURLDetails();
 	}
 
 	final public function ANTAError(){
@@ -754,19 +728,9 @@ abstract class Connector {
 	  return (string) $L_s_out;
 	}
 
-	final private function CheckCURL(){
-        if(ini_get('safe_mode') == 1) return false;
-        return (bool) in_array('curl', get_loaded_extensions());
-	}
+	final private function CheckClientResult(){
 
-	final private function CheckCURLResult(){
-		if($this->GetCurlHardError()){
-			throw new Exception("Hard Socket/Call error [ " .
-				$this->GetCurlError() .
-			" ]", 3);
-		}
-
-		if($this->CURLDetails()->http_code == 500 && preg_match("@faultcode>[^<]+<\/faultcode@i", $this->GetCURLResponse())){
+		if($this->M_o_Client->GetResponseHttpCode() == 500 && preg_match("@faultcode>[^<]+<\/faultcode@i", $this->GetClientResponse())){
 			// ANTA Error!
 			$this->SetParsedANTAError();
 			if($this->ANTAError()->code !== Connector::NON_ANTA_ERROR){
@@ -774,23 +738,23 @@ abstract class Connector {
 			}
 		}
 
-		if($this->CURLDetails()->http_code !== 200){
+		if($this->M_o_Client->GetResponseHttpCode() !== 200){
 			throw new Exception("Soft-HTTP error [ " .
-				$this->CURLDetails()->http_code . " " .
-				$this->Connection()->GetHTTPStatusText($this->CURLDetails()->http_code) .
+				$this->M_o_Client->GetResponseHttpCode()  . " " .
+				$this->Connection()->GetHTTPStatusText($this->M_o_Client->GetResponseHttpCode() ) .
 			" ]", 4);
 		}
 
 		// If we're here stuff should be fine, HTTP code must be 200...
 		$L_b_ConnectorMatch = false;
-		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)>(.*)<\/(".$this->GetResponseObject()."|ExecuteResult)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
+		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)>(.*)<\/(".$this->GetResponseObject()."|ExecuteResult)>@ms", $this->GetClientResponse(), $L_s_ResponseMatch)){
 			if(isset($L_s_ResponseMatch[2])){
 				// Returnvars
 				$L_b_ConnectorMatch = true;
 				$this->SetOutputXML($L_s_ResponseMatch[2]);
 			}
 		}
-		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)([^>]+\/)>@ms", $this->GetCURLResponse(), $L_s_ResponseMatch)){
+		if(preg_match("@<(".$this->GetResponseObject()."|ExecuteResult)([^>]+\/)>@ms", $this->GetClientResponse(), $L_s_ResponseMatch)){
 			if(isset($L_s_ResponseMatch[1])){
 				// Blank results
 				$L_b_ConnectorMatch = true;
