@@ -1,9 +1,6 @@
 {
     "name": "tomlankhorst/afas-profit",
     "type": "library",
-    "require": {
-        "php": "^7.2"
-    },
     "suggest": {
         "guzzlehttp/guzzle": "Alternative HTTP client implementation, supports mocking"
     },
